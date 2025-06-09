@@ -48,7 +48,22 @@ def create_tables():
             updated_at TEXT
         );
     ''')
-
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS leads (
+            lead_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            lead_title TEXT NOT NULL,
+            lead_customer TEXT,
+            lead_employee TEXT,
+            lead_description TEXT,
+            lead_created_date TEXT DEFAULT (DATE('now')),
+            lead_updated_at TEXT,
+            lead_date TEXT,
+            lead_time TEXT,
+            lead_priority INTEGER,
+            lead_tags TEXT,
+            lead_status INTEGER DEFAULT 1
+        )
+    ''')
     conn.commit()
     conn.close()
 
