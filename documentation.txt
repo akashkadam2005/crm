@@ -1,0 +1,16 @@
+for lead
+I want to make the cru api for lead 
+--------------------------------------
+lead_id (primaory key)
+lead_title
+lead_customer
+lead_employee
+lead_description  
+lead_created_date (default today)
+lead_updated_at ( Update when lead Update )
+lead_date (Finishing Date)
+lead_time 
+lead_priority (1="Low",2="Medium",3="High")
+lead_tags
+lead_status (1="Pending",2="On Going",3="Cancelled",4="Completed") default 1
+
