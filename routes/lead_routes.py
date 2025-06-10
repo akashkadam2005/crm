@@ -23,6 +23,15 @@ def get_lead(lead_id):
         return jsonify(dict(lead))
     return jsonify({'message': 'Lead not found'}), 404
 
+@lead_bp.route('/leads/status/<int:lead_status>', methods=['GET'])
+def get_lead_status(lead_status):
+    conn = get_db_connection()
+    lead = conn.execute('SELECT * FROM leads WHERE lead_status = ?', (lead_status,)).fetchall()
+    conn.close()
+    if lead:
+        return jsonify([dict(row) for row in lead])
+    return jsonify([])
+
 # CREATE a lead
 @lead_bp.route('/leads', methods=['POST'])
 def create_lead():
