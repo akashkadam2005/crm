@@ -35,15 +35,14 @@ def create_tables():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
             phone TEXT,
             address TEXT,
             department TEXT,
             designation TEXT,
-            employee_code TEXT UNIQUE,
             date_of_joining TEXT,
             salary REAL,
             status TEXT DEFAULT 'Active',
-            notes TEXT,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
             updated_at TEXT
         );
