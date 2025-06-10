@@ -68,7 +68,7 @@ def create_tables():
     conn.close()
 
 # Run this once to create tables
-# create_tables()
+create_tables()
 if __name__ == '__main__':
     create_tables()
     print("Database and tables created successfully.")
