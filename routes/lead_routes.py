@@ -23,6 +23,73 @@ def get_lead(lead_id):
         return jsonify(dict(lead))
     return jsonify({'message': 'Lead not found'}), 404
 
+@lead_bp.route('/leads/status/<int:lead_status>', methods=['GET'])
+def get_lead_status(lead_status):
+    conn = get_db_connection()
+    lead = conn.execute('SELECT * FROM leads WHERE lead_status = ?', (lead_status,)).fetchall()
+    conn.close()
+    if lead:
+        return jsonify([dict(row) for row in lead])
+    return jsonify([])
+
+
+@lead_bp.route('/leads/summary', methods=['GET'])
+def lead_summary():
+    start_date = request.args.get('start')
+    end_date = request.args.get('end')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # --- Count Query ---
+    base_count_query = "SELECT lead_status, COUNT(*) as count FROM leads"
+    base_total_query = "SELECT COUNT(*) FROM leads"
+    base_list_query = "SELECT * FROM leads"
+    params = []
+
+    # Apply date filter if present
+    if start_date and end_date:
+        filter_clause = " WHERE DATE(lead_created_date) BETWEEN ? AND ?"
+        params.extend([start_date, end_date])
+        count_query = base_count_query + filter_clause + " GROUP BY lead_status"
+        total_query = base_total_query + filter_clause
+        list_query = base_list_query + filter_clause + " ORDER BY lead_created_date DESC"
+    else:
+        count_query = base_count_query + " GROUP BY lead_status"
+        total_query = base_total_query
+        list_query = base_list_query + " ORDER BY lead_created_date DESC"
+
+    # --- Execute queries ---
+    total_count = cursor.execute(total_query, params).fetchone()[0]
+    status_counts = cursor.execute(count_query, params).fetchall()
+    leads = cursor.execute(list_query, params).fetchall()
+    conn.close()
+
+    # --- Build Response ---
+    result = {
+        'total': total_count,
+        'pending': 0,
+        'ongoing': 0,
+        'cancelled': 0,
+        'completed': 0,
+        'leads': [dict(row) for row in leads]
+    }
+
+    for row in status_counts:
+        status = row['lead_status']
+        count = row['count']
+        if status == 1:
+            result['pending'] = count
+        elif status == 2:
+            result['ongoing'] = count
+        elif status == 3:
+            result['cancelled'] = count
+        elif status == 4:
+            result['completed'] = count
+
+    return jsonify(result)
+
+
 # CREATE a lead
 @lead_bp.route('/leads', methods=['POST'])
 def create_lead():
