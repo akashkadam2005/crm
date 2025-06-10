@@ -29,7 +29,12 @@ def create_lead():
     data = request.get_json()
     conn = get_db_connection()
     cursor = conn.cursor()
-    
+
+    # Convert list to comma-separated string
+    lead_tags = data.get('lead_tags')
+    if isinstance(lead_tags, list):
+        lead_tags = ','.join(lead_tags)
+
     cursor.execute('''
         INSERT INTO leads (
             lead_title, lead_customer, lead_employee,
@@ -44,7 +49,7 @@ def create_lead():
         data.get('lead_date'),
         data.get('lead_time'),
         data.get('lead_priority'),
-        data.get('lead_tags'),
+        lead_tags,
         data.get('lead_status', 1)
     ))
 
