@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
-import sqlite3
-from database import get_db_connection
-from werkzeug.security import generate_password_hash, check_password_hash 
+from database import get_db_connection 
+import bcrypt
 
 auth_bp = Blueprint('auth_bp', __name__)
   
@@ -22,27 +21,17 @@ def login():
     if not user:
         return jsonify({'message': 'Invalid credentials'}), 401
 
-    stored_password = user['password']
+    stored_password = user['password'].encode('utf-8')  # Convert to bytes for bcrypt
     
-    # Case 1: Password is already hashed with Werkzeug
-    if stored_password.startswith('pbkdf2:'):
-        if check_password_hash(stored_password, password):
-            return login_success(user)
+    try:
+        # Verify the password
+        if bcrypt.checkpw(password.encode('utf-8'), stored_password):
+            return jsonify({
+                'status': user['status'],
+                'message': 'Login successful',
+                'users': dict(user)
+            }), 200
         else:
             return jsonify({'message': 'Invalid credentials'}), 401
-    
-    # Case 2: Password is plaintext (TEMPORARY FIX - UNSAFE!)
-    elif stored_password == password:
-        return login_success(user)
-    
-    # Case 3: Password is invalid
-    else:
-        return jsonify({'message': 'Invalid credentials'}), 401
-
-def login_success(user):
-    return jsonify({
-        'message': 'Login successful',
-        'user_id': user['id'],
-        'email': user['email'],
-        'name': user['name']   
-    }), 200
+    except ValueError:
+        return jsonify({'message': 'Invalid password hash format'}), 500

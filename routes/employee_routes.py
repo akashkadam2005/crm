@@ -55,7 +55,7 @@ def add_employee():
             data['date_of_joining'],
             data.get('salary', 0.0),
             hashed_password,
-            data.get('status', 'Active'),
+            data.get('status', 2),
             data.get('updated_at', None)
         ))
         conn.commit()

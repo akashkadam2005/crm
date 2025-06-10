@@ -49,15 +49,15 @@ def lead_summary():
 
     # Apply date filter if present
     if start_date and end_date:
-        filter_clause = " WHERE DATE(lead_created_date) BETWEEN ? AND ?"
+        filter_clause = " WHERE DATE(lead_date) BETWEEN ? AND ?"
         params.extend([start_date, end_date])
         count_query = base_count_query + filter_clause + " GROUP BY lead_status"
         total_query = base_total_query + filter_clause
-        list_query = base_list_query + filter_clause + " ORDER BY lead_created_date DESC"
+        list_query = base_list_query + filter_clause + " ORDER BY lead_date DESC"
     else:
         count_query = base_count_query + " GROUP BY lead_status"
         total_query = base_total_query
-        list_query = base_list_query + " ORDER BY lead_created_date DESC"
+        list_query = base_list_query + " ORDER BY lead_date DESC"
 
     # --- Execute queries ---
     total_count = cursor.execute(total_query, params).fetchone()[0]
