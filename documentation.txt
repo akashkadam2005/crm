@@ -14,3 +14,6 @@ lead_priority (1="Low",2="Medium",3="High")
 lead_tags
 lead_status (1="Pending",2="On Going",3="Cancelled",4="Completed") default 1
 
+
+
+http://192.168.1.42:5000/api/leads/summary?start=2025-06-10&end=2025-06-10
